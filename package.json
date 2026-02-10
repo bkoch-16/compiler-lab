@@ -1,0 +1,25 @@
+{
+  "name": "compiler-lab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bkoch-16/compiler-lab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/bkoch-16/compiler-lab/issues"
+  },
+  "homepage": "https://github.com/bkoch-16/compiler-lab#readme",
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

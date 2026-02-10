@@ -1,0 +1,73 @@
+import {type Token, TokenFactory, TokenType} from './utils.js'
+
+
+export class Scanner {
+
+    makeToken(chunk: string): Token {
+        let tokenType: TokenType
+
+        const numRegex: RegExp = /\d+/;
+        switch (chunk) {
+            case ('+'): tokenType = TokenType.ADD; break;
+            case ('-'): tokenType = TokenType.SUBTRACT; break;
+            case ('*'): tokenType = TokenType.MULTIPLY; break;
+            case ('/'): tokenType = TokenType.DIVIDE; break;
+            case ('^'): tokenType = TokenType.POWER; break;
+            case ('('): tokenType = TokenType.OPENPAR; break;
+            case (')'): tokenType = TokenType.CLOSEPAR; break;
+            case (''): tokenType = TokenType.EOF; break;
+            default:
+                if (numRegex.test(chunk)) {
+                    tokenType = TokenType.NUMBER;
+                    break;
+                }
+                throw new Error(`Unknown token: ${chunk}`);
+        }
+        return TokenFactory.create(tokenType, chunk)
+    }
+
+    scanEquation(equation:string): Token[] {
+        let tokenList: Token[] = [];
+        const charNumRegex: RegExp = /\d/;
+        const consecNumRegex: RegExp = /\d+/;
+
+        if (equation) {
+            // Remove all white space
+            let validatedEqn: string = equation.replace(/\s/g,'')
+
+            for (let i: number = 0; i < validatedEqn.length; i++) {
+                const currentValue = validatedEqn[i]
+                if (currentValue !== undefined) {
+                    if (charNumRegex.test(currentValue)) {
+                        // Numeric character
+                        // Slice the string so we can match with regex to find the length of the number
+
+                        const numberSearch: string = validatedEqn.slice(i)
+                        const checkNumLength = numberSearch.match(consecNumRegex);
+                        if (checkNumLength) {
+                            const numLength: number = checkNumLength[0].length
+                            const extractNumber: string = checkNumLength[0].slice(0, numLength)
+                            tokenList.push(this.makeToken(extractNumber))
+                            i += numLength - 1;
+                        }
+                    } else {
+                        // Operation character (non-numeric)
+
+                        tokenList.push(this.makeToken(currentValue));}
+                }
+            }
+        }
+        tokenList.push(this.makeToken(""));
+        console.log(tokenList)
+        return tokenList;
+    }
+}
+
+const input: string = "3 + 5^2";
+const input2: string = "215*(3+2)^2+1"
+
+let scanner = new Scanner();
+scanner.scanEquation(input);
+scanner.scanEquation(input2);
+
+
