@@ -58,16 +58,6 @@ export class Scanner {
             }
         }
         tokenList.push(this.makeToken(""));
-        console.log(tokenList)
         return tokenList;
     }
 }
-
-const input: string = "3 + 5^2";
-const input2: string = "215*(3+2)^2+1"
-
-let scanner = new Scanner();
-scanner.scanEquation(input);
-scanner.scanEquation(input2);
-
-
