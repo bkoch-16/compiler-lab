@@ -46,4 +46,12 @@ describe('Scanner Class', () => {
 
         expect(() => scanner.scanEquation(input)).toThrowError("Unknown token: $")
     })
+
+    it('should return EOF', () => {
+        const scanner = new Scanner();
+
+        const input: string = "";
+
+        expect(scanner.scanEquation(input)).toEqual([{ type: 'EOF', char: '' }])
+    })
 })
