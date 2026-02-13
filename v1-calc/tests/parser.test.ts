@@ -66,6 +66,27 @@ describe('Scanner Class', () => {
         const parser = new Parser(tokens);
 
         expect(() => parser.start()).toThrowError('Unexpected token at the end of expression: )')
+    })
 
+    it('Throw an error for unexpected closing character', () => {
+        const scanner = new Scanner();
+
+        const raw: string = "2 - (10-4/2";
+        const tokens: Token[] = scanner.scanEquation(raw);
+
+        const parser = new Parser(tokens);
+
+        expect(() => parser.start()).toThrowError('Missing closing parenthesis')
+    })
+
+    it('Throw an error for unexpected symbol arrangement', () => {
+        const scanner = new Scanner();
+
+        const raw: string = "2 ++ 4";
+        const tokens: Token[] = scanner.scanEquation(raw);
+
+        const parser = new Parser(tokens);
+
+        expect(() => parser.start()).toThrowError('Unexpected token found: ADD')
     })
 })
