@@ -28,6 +28,16 @@ export class Parser {
         return (this.peek().type === TokenType.EOF)
     }
 
+    start(): ASTNode {
+        const root: ASTNode = this.parseExpression();
+
+        if (!this.isAtEnd()) {
+            throw new Error(`Unexpected token at the end of expression: ${this.peek().char}`);
+        }
+
+        return root;
+    }
+
     parseExpression(): ASTNode {
         let left: ASTNode = this.parseTerm();
         while (this.peek().type === TokenType.ADD || this.peek().type === TokenType.SUBTRACT) {
@@ -36,8 +46,6 @@ export class Parser {
             left = ASTNodeFactory.createBinary(token.char, left, right)
         }
 
-        /// ToDo: remove console log
-        console.dir(left.toJson(), { depth: null });
         return left;
     }
 
@@ -90,7 +98,5 @@ export class Parser {
             throw new Error (`Unexpected token found: ${this.peek().type}`)
         }
     }
-
-
 }
 

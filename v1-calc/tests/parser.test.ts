@@ -12,7 +12,7 @@ describe('Scanner Class', () => {
 
         const parser = new Parser(tokens);
 
-        expect(parser.parseExpression()).toEqual({
+        expect(parser.start()).toEqual({
             kind: 'BINARYEXPRESSION',
             value: '+',
             left: { kind: 'LITERAL', value: '32' },
@@ -33,7 +33,7 @@ describe('Scanner Class', () => {
 
         const parser = new Parser(tokens);
 
-        expect(parser.parseExpression()).toEqual({
+        expect(parser.start()).toEqual({
                 kind: "BINARYEXPRESSION",
                 value: "-",
                 left: {
@@ -55,5 +55,17 @@ describe('Scanner Class', () => {
                     }
                 }
         })
+    })
+
+    it('Throw an error for unexpected closing character', () => {
+        const scanner = new Scanner();
+
+        const raw: string = "2 - (10-4))/2";
+        const tokens: Token[] = scanner.scanEquation(raw);
+
+        const parser = new Parser(tokens);
+
+        expect(() => parser.start()).toThrowError('Unexpected token at the end of expression: )')
+
     })
 })
