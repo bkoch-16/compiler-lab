@@ -29,36 +29,68 @@ export const TokenFactory = {
     }
 }
 
-export type ASTNode = LiteralNode | BinaryNode
 
-interface LiteralNode {
-    kind: NodeKind.LITERAL,
-    value: string,
+export abstract class ASTNode {
+    abstract value: string;
+
+    abstract toJson(): any;
+    abstract calculate(): any;
 }
 
-interface BinaryNode {
-    kind: NodeKind.BINARYEXPRESSION,
-    value: string,
-    left: ASTNode,
-    right: ASTNode,
+export class LiteralNode extends ASTNode {
+    readonly kind: NodeKind.LITERAL = NodeKind.LITERAL;
+
+    // Use 'public' to automatically create the 'value' property
+    constructor(public value: string) {
+        super();
+    }
+
+    // Converts "5" into the number 5
+    calculate(): number {
+        return parseFloat(this.value);
+    }
+
+    // Simple representation of the number
+    toJson(): { kind: NodeKind.LITERAL; value: string } {
+        return {
+            kind: this.kind,
+            value: this.value
+        };
+    }
+}
+
+export class BinaryNode extends ASTNode {
+    readonly kind: NodeKind.BINARYEXPRESSION = NodeKind.BINARYEXPRESSION;
+
+    // Use 'public' to automatically create the 'value' property
+    constructor(public value: string, public left: ASTNode, public right: ASTNode) {
+        super();
+    }
+
+    /// TODO: Implement calculate
+    calculate(): number {
+        return 1;
+    }
+
+    // Recursively get children
+    toJson() {
+        return {
+            kind: this.kind,
+            value: this.value,
+            left: this.left.toJson(),
+            right: this.right.toJson(),
+        }
+    }
 }
 
 
-export const ASTNodeFactory = {
-    createLiteral(value: string): LiteralNode {
-        return {
-            kind: NodeKind.LITERAL,
-            value
-        }
-    },
+export class ASTNodeFactory {
+    static createLiteral(value: string): ASTNode {
+        return new LiteralNode(value);
+    }
 
-    createBinary(value: string, left: ASTNode, right: ASTNode): ASTNode {
-        return {
-            kind: NodeKind.BINARYEXPRESSION,
-            value,
-            left,
-            right,
-        }
+    static createBinary(value: string, left: ASTNode, right: ASTNode): ASTNode {
+        return new BinaryNode(value, left, right)
     }
 }
 

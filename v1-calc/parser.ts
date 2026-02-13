@@ -1,4 +1,4 @@
-import {type ASTNode, ASTNodeFactory, type Token, TokenType} from './utils.js'
+import {ASTNode, ASTNodeFactory, type Token, TokenType} from './utils.js'
 
 export class Parser {
     currentIndex: number;
@@ -35,7 +35,9 @@ export class Parser {
             let right: ASTNode = this.parseTerm();
             left = ASTNodeFactory.createBinary(token.char, left, right)
         }
-        console.log(left);
+
+        /// ToDo: remove console log
+        console.dir(left.toJson(), { depth: null });
         return left;
     }
 
@@ -91,17 +93,4 @@ export class Parser {
 
 
 }
-
-let list: Token[] = [
-    {type: TokenType.NUMBER, char: '32'},
-    {type: TokenType.ADD, char: '+'},
-    {type: TokenType.NUMBER, char: '5'},
-    {type: TokenType.POWER, char: '^'},
-    {type: TokenType.NUMBER, char: '2'},
-    {type: TokenType.EOF, char: ''}
-];
-
-const cat = new Parser(list);
-
-cat.parseExpression();
 
