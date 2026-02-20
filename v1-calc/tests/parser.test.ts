@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest'
-import {type ASTNode, type Token, TokenType} from '../utils.js'
+import {type ASTNode, type Token} from '../utils.js'
 import {Scanner} from '../scanner.js'
 import {Parser} from '../parser.js'
 
