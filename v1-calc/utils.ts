@@ -1,3 +1,5 @@
+export type AllowedOperators = "+" | "-" | "*" | "/" | "^";
+
 export enum TokenType {
     ADD = "ADD",
     SUBTRACT = "SUBTRACT",
@@ -47,7 +49,7 @@ export class LiteralNode extends ASTNode {
 
     // Converts "5" into the number 5
     calculate(): number {
-        return parseFloat(this.value);
+        return Number(this.value);
     }
 
     // Simple representation of the number
@@ -63,13 +65,12 @@ export class BinaryNode extends ASTNode {
     readonly kind: NodeKind.BINARYEXPRESSION = NodeKind.BINARYEXPRESSION;
 
     // Use 'public' to automatically create the 'value' property
-    constructor(public value: string, public left: ASTNode, public right: ASTNode) {
+    constructor(public value: AllowedOperators, public left: ASTNode, public right: ASTNode) {
         super();
     }
 
-    /// TODO: Implement calculate
     calculate(): number {
-        return 1;
+        return BinaryNode.dispatch[this.value](this.left.calculate(), this.right.calculate())
     }
 
     // Recursively get children
@@ -81,6 +82,37 @@ export class BinaryNode extends ASTNode {
             right: this.right.toJson(),
         }
     }
+
+    static dispatch = {
+        "+": BinaryNode.add,
+        "-": BinaryNode.subtract,
+        "*": BinaryNode.multiply,
+        "/": BinaryNode.divide,
+        "^": BinaryNode.power,
+    };
+
+    static add(a: number, b: number): number {
+        return a+b;
+    }
+
+    static subtract(a: number, b: number): number {
+        return a-b;
+    }
+
+    static multiply(a: number, b: number): number {
+        return a*b;
+    }
+
+    static divide(a: number, b: number): number {
+        if (b === 0) {
+            throw new Error("Divide by zero - undefined answer")
+        }
+        return a/b;
+    }
+
+    static power(a: number, b: number): number {
+        return a**b;
+    }
 }
 
 
@@ -89,7 +121,7 @@ export class ASTNodeFactory {
         return new LiteralNode(value);
     }
 
-    static createBinary(value: string, left: ASTNode, right: ASTNode): ASTNode {
+    static createBinary(value: AllowedOperators, left: ASTNode, right: ASTNode): ASTNode {
         return new BinaryNode(value, left, right)
     }
 }

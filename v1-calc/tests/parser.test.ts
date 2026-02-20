@@ -4,7 +4,7 @@ import {Scanner} from '../scanner.js'
 import {Parser} from '../parser.js'
 
 describe('Parser Class', () => {
-    it('Construct AST with addition and power', () => {
+    it('Construct and calculate AST with addition and power', () => {
         const scanner = new Scanner();
 
         const raw: string = "32 + 5^2";
@@ -12,7 +12,8 @@ describe('Parser Class', () => {
 
         const parser = new Parser(tokens);
 
-        expect(parser.start()).toEqual({
+        const tree: ASTNode = parser.start();
+        expect(tree).toEqual({
             kind: 'BINARYEXPRESSION',
             value: '+',
             left: { kind: 'LITERAL', value: '32' },
@@ -23,17 +24,21 @@ describe('Parser Class', () => {
                 right: { kind: 'LITERAL', value: '2' }
             }
         })
+
+        const result: number = tree.calculate();
+        expect(result).toBe(57);
     })
 
-    it('Construct AST with subtraction, parenthesis, and division ', () => {
+    it('Construct and calculate AST with subtraction, parenthesis, and division ', () => {
         const scanner = new Scanner();
 
         const raw: string = "2 - (10-4)/2";
         const tokens: Token[] = scanner.scanEquation(raw);
 
         const parser = new Parser(tokens);
+        const tree: ASTNode = parser.start();
 
-        expect(parser.start()).toEqual({
+        expect(tree).toEqual({
                 kind: "BINARYEXPRESSION",
                 value: "-",
                 left: {
@@ -55,6 +60,9 @@ describe('Parser Class', () => {
                     }
                 }
         })
+
+        const result: number = tree.calculate();
+        expect(result).toBe(-1);
     })
 
     it('Throw an error for unexpected closing character', () => {

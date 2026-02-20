@@ -14,7 +14,6 @@ describe('Evaluator Class', () => {
 
         const astTree: ASTNode = parser.start();
 
-        const evaluator = new Evaluator(astTree);
-        expect(evaluator.start()).toBe(57);
+        expect(astTree.calculate()).toBe(57);
     })
 })
