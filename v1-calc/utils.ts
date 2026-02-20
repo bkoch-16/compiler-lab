@@ -94,3 +94,36 @@ export class ASTNodeFactory {
     }
 }
 
+export class calculatorDispatch {
+    static dispatch = {
+        "+":  calculatorDispatch.add,
+        "-": calculatorDispatch.subtract,
+        "*": calculatorDispatch.multiply,
+        "/": calculatorDispatch.divide,
+        "^": calculatorDispatch.power,
+    };
+
+    static add(a: number, b: number): number {
+        return a+b;
+    }
+
+    static subtract(a: number, b: number): number {
+        return a-b;
+    }
+
+    static multiply(a: number, b: number): number {
+        return a*b;
+    }
+
+    static divide(a: number, b: number): number {
+        if (b < 0) {
+            throw new Error("Divide by zero - undefined answer")
+        }
+        return a/b;
+    }
+
+    static power(a: number, b: number): number {
+        return a**b;
+    }
+}
+

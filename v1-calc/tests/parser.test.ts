@@ -3,7 +3,7 @@ import {type ASTNode, type Token, TokenType} from '../utils.js'
 import {Scanner} from '../scanner.js'
 import {Parser} from '../parser.js'
 
-describe('Scanner Class', () => {
+describe('Parser Class', () => {
     it('Construct AST with addition and power', () => {
         const scanner = new Scanner();
 
