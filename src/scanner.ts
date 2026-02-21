@@ -35,6 +35,9 @@ export class Scanner {
           tokenType = TokenType.NUMBER;
           break;
         }
+        if (chunk.includes('.')) {
+          throw new Error('Floating point numbers are not supported');
+        }
         throw new Error(`Unknown token: ${chunk}`);
     }
     return TokenFactory.create(tokenType, chunk);

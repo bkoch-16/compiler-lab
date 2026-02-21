@@ -21,6 +21,6 @@ Process
 
 Run Instructions
 
-- Parser: `npm install && npx tsx parser.ts`
+- Parser: `npm install && npx tsx src/main.ts "<expression>"`
 - Tests: `npx vitest`
 - Formatter: `npm run format`
