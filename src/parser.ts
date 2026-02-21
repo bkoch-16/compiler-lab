@@ -70,13 +70,13 @@ export class Parser {
   }
 
   parseTerm(): ASTNode {
-    let left: ASTNode = this.parsePower();
+    let left: ASTNode = this.parseUnary();
     while (
       this.peek().type === TokenType.MULTIPLY ||
       this.peek().type === TokenType.DIVIDE
     ) {
       const token: Token = this.consume();
-      const right: ASTNode = this.parsePower();
+      const right: ASTNode = this.parseUnary();
       left = ASTNodeFactory.createBinary(
         <BinaryOperators>token.text,
         left,
@@ -86,8 +86,23 @@ export class Parser {
     return left;
   }
 
+  parseUnary(): ASTNode {
+    if (
+        this.peek().type === TokenType.ADD ||
+        this.peek().type === TokenType.SUBTRACT
+    ) {
+      const token: Token = this.consume();
+
+      return ASTNodeFactory.createUnary(
+          <UnaryOperators>token.text,
+          this.parseUnary(),
+      );
+    }
+    return this.parsePower();
+  }
+
   parsePower(): ASTNode {
-    const left: ASTNode = this.parseUnary();
+    const left: ASTNode = this.parsePrimary();
     if (this.peek().type === TokenType.POWER) {
       const token: Token = this.consume();
       return ASTNodeFactory.createBinary(
@@ -97,21 +112,6 @@ export class Parser {
       );
     }
     return left;
-  }
-
-  parseUnary(): ASTNode {
-    if (
-      this.peek().type === TokenType.ADD ||
-      this.peek().type === TokenType.SUBTRACT
-    ) {
-      const token: Token = this.consume();
-
-      return ASTNodeFactory.createUnary(
-        <UnaryOperators>token.text,
-        this.parseUnary(),
-      );
-    }
-    return this.parsePrimary();
   }
 
   parsePrimary(): ASTNode {

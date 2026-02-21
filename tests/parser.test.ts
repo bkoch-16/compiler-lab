@@ -140,6 +140,20 @@ describe('Parser Class', () => {
     const tree: ASTNode = parser.start();
 
     const result: number = tree.calculate();
+    expect(result).toBe(-4);
+  });
+
+  it('Handle unary precedence', () => {
+    const scanner = new Scanner();
+
+    const raw: string = '(-2)^2';
+    const tokens: Token[] = scanner.scanEquation(raw);
+
+    const parser = new Parser(tokens);
+
+    const tree: ASTNode = parser.start();
+
+    const result: number = tree.calculate();
     expect(result).toBe(4);
   });
 });
