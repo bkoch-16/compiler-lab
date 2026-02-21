@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
-import {type Token, TokenType} from '../utils.js'
-import {Scanner} from '../scanner.js'
+import {type Token, TokenType} from '../src/utils.js'
+import {Scanner} from '../src/scanner.js'
 
 describe('Scanner Class', () => {
     it('should parse number, addition, power', () => {

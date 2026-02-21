@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
-import {type ASTNode, type Token} from '../utils.js'
-import {Scanner} from '../scanner.js'
-import {Parser} from '../parser.js'
+import {type ASTNode, type Token} from '../src/utils.js'
+import {Scanner} from '../src/scanner.js'
+import {Parser} from '../src/parser.js'
 
 describe('Parser Class', () => {
     it('Construct and calculate AST with addition and power', () => {
