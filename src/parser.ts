@@ -3,9 +3,7 @@ import {
   ASTNodeFactory,
   type Token,
   TokenType,
-  type BinaryOperators,
-  type UnaryOperators,
-} from './utils.js';
+} from './types/index.js';
 
 export class Parser {
   currentIndex: number;
@@ -57,13 +55,11 @@ export class Parser {
       this.peek().type === TokenType.ADD ||
       this.peek().type === TokenType.SUBTRACT
     ) {
-      const token: Token = this.consume();
+      const token = this.consume();
       const right: ASTNode = this.parseTerm();
-      left = ASTNodeFactory.createBinary(
-        <BinaryOperators>token.text,
-        left,
-        right,
-      );
+      if (token.type === TokenType.ADD || token.type === TokenType.SUBTRACT) {
+        left = ASTNodeFactory.createBinary(token.text, left, right);
+      }
     }
 
     return left;
@@ -75,13 +71,11 @@ export class Parser {
       this.peek().type === TokenType.MULTIPLY ||
       this.peek().type === TokenType.DIVIDE
     ) {
-      const token: Token = this.consume();
+      const token = this.consume();
       const right: ASTNode = this.parseUnary();
-      left = ASTNodeFactory.createBinary(
-        <BinaryOperators>token.text,
-        left,
-        right,
-      );
+      if (token.type === TokenType.MULTIPLY || token.type === TokenType.DIVIDE) {
+        left = ASTNodeFactory.createBinary(token.text, left, right);
+      }
     }
     return left;
   }
@@ -91,12 +85,10 @@ export class Parser {
         this.peek().type === TokenType.ADD ||
         this.peek().type === TokenType.SUBTRACT
     ) {
-      const token: Token = this.consume();
-
-      return ASTNodeFactory.createUnary(
-          <UnaryOperators>token.text,
-          this.parseUnary(),
-      );
+      const token = this.consume();
+      if (token.type === TokenType.ADD || token.type === TokenType.SUBTRACT) {
+        return ASTNodeFactory.createUnary(token.text, this.parseUnary());
+      }
     }
     return this.parsePower();
   }
@@ -104,12 +96,10 @@ export class Parser {
   parsePower(): ASTNode {
     const left: ASTNode = this.parsePrimary();
     if (this.peek().type === TokenType.POWER) {
-      const token: Token = this.consume();
-      return ASTNodeFactory.createBinary(
-        <BinaryOperators>token.text,
-        left,
-        this.parsePower(),
-      );
+      const token = this.consume();
+      if (token.type === TokenType.POWER) {
+        return ASTNodeFactory.createBinary(token.text, left, this.parsePower());
+      }
     }
     return left;
   }

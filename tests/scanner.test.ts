@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type Token, TokenType } from '../src/utils.js';
+import { type Token, TokenType } from '../src/types/index.js';
 import { Scanner } from '../src/scanner.js';
 
 describe('Scanner Class', () => {

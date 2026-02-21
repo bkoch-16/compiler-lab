@@ -1,37 +1,10 @@
-export type BinaryOperators = '+' | '-' | '*' | '/' | '^';
-export type UnaryOperators = '+' | '-';
-
-export enum TokenType {
-  ADD = 'ADD',
-  SUBTRACT = 'SUBTRACT',
-  MULTIPLY = 'MULTIPLY',
-  DIVIDE = 'DIVIDE',
-  POWER = 'POWER',
-  OPENPAR = 'OPENPAR',
-  CLOSEPAR = 'CLOSEPAR',
-  NUMBER = 'NUMBER',
-  EOF = 'EOF', // End of file
-}
+import type { BinaryOperators, UnaryOperators } from './tokens.js';
 
 export enum NodeKind {
   LITERAL = 'LITERAL',
   BINARYEXPRESSION = 'BINARYEXPRESSION',
   UNARYEXPRESSION = 'UNARYEXPRESSION',
 }
-
-export interface Token {
-  type: TokenType;
-  text: string;
-}
-
-export const TokenFactory = {
-  create(type: TokenType, text: string): Token {
-    return {
-      type,
-      text,
-    };
-  },
-};
 
 export abstract class ASTNode {
   abstract value: string;

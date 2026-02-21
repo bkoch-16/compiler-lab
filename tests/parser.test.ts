@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type ASTNode, type Token } from '../src/utils.js';
+import { type ASTNode, type Token } from '../src/types/index.js';
 import { Scanner } from '../src/scanner.js';
 import { Parser } from '../src/parser.js';
 
@@ -143,7 +143,7 @@ describe('Parser Class', () => {
     expect(result).toBe(-4);
   });
 
-  it('Handle unary precedence', () => {
+  it('Handle unary precedence with parenthesis', () => {
     const scanner = new Scanner();
 
     const raw: string = '(-2)^2';
@@ -155,5 +155,19 @@ describe('Parser Class', () => {
 
     const result: number = tree.calculate();
     expect(result).toBe(4);
+  });
+
+  it('Throw an error for divide by zero', () => {
+    const scanner = new Scanner();
+
+    const raw: string = '10 / 0';
+    const tokens: Token[] = scanner.scanEquation(raw);
+
+    const parser = new Parser(tokens);
+    const tree: ASTNode = parser.start();
+
+    expect(() => tree.calculate()).toThrowError(
+      'Divide by zero - undefined answer',
+    );
   });
 });

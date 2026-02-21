@@ -1,4 +1,4 @@
-import { type Token, TokenFactory, TokenType } from './utils.js';
+import { type Token, TokenFactory, TokenType } from './types/index.js';
 
 export class Scanner {
   makeToken(chunk: string): Token {
