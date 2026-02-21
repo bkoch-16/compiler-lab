@@ -1,111 +1,147 @@
-import {ASTNode, ASTNodeFactory, type Token, TokenType, type BinaryOperators, type UnaryOperators} from './utils.js'
+import {
+  ASTNode,
+  ASTNodeFactory,
+  type Token,
+  TokenType,
+  type BinaryOperators,
+  type UnaryOperators,
+} from './utils.js';
 
 export class Parser {
-    currentIndex: number;
-    tokens: Token[];
+  currentIndex: number;
+  tokens: Token[];
 
-    constructor(tokens: Token[]) {
-        this.currentIndex = 0;
-        this.tokens = tokens;
+  constructor(tokens: Token[]) {
+    this.currentIndex = 0;
+    this.tokens = tokens;
+  }
+
+  peek(): Token {
+    const currentValue = this.tokens[this.currentIndex];
+    if (currentValue) {
+      return currentValue;
+    } else {
+      throw new Error(
+        'Unexpected end of input: Token array format is unexpected',
+      );
+    }
+  }
+
+  consume(): Token {
+    const currentValue = this.peek();
+    this.currentIndex++;
+    return currentValue;
+  }
+
+  isAtEnd(): boolean {
+    return this.peek().type === TokenType.EOF;
+  }
+
+  start(): ASTNode {
+    const root: ASTNode = this.parseExpression();
+    if (process.env.DEBUG) {
+        console.dir(root.toJson(), { depth: null, colors: true });
+    }
+    if (!this.isAtEnd()) {
+      throw new Error(
+        `Unexpected token at the end of expression: ${this.peek().text}`,
+      );
     }
 
-    peek(): Token {
-        const currentValue = this.tokens[this.currentIndex];
-        if (currentValue) {
-            return currentValue
-        } else {
-            throw new Error("Unexpected end of input: Token array format is unexpected");
-        }
+    return root;
+  }
+
+  parseExpression(): ASTNode {
+    let left: ASTNode = this.parseTerm();
+    while (
+      this.peek().type === TokenType.ADD ||
+      this.peek().type === TokenType.SUBTRACT
+    ) {
+      const token: Token = this.consume();
+      const right: ASTNode = this.parseTerm();
+      left = ASTNodeFactory.createBinary(
+        <BinaryOperators>token.text,
+        left,
+        right,
+      );
     }
 
-    consume(): Token {
-        const currentValue = this.peek()
-        this.currentIndex++
-        return currentValue;
+    return left;
+  }
+
+  parseTerm(): ASTNode {
+    let left: ASTNode = this.parsePower();
+    while (
+      this.peek().type === TokenType.MULTIPLY ||
+      this.peek().type === TokenType.DIVIDE
+    ) {
+      const token: Token = this.consume();
+      const right: ASTNode = this.parsePower();
+      left = ASTNodeFactory.createBinary(
+        <BinaryOperators>token.text,
+        left,
+        right,
+      );
+    }
+    return left;
+  }
+
+  parsePower(): ASTNode {
+    const left: ASTNode = this.parseUnary();
+    if (this.peek().type === TokenType.POWER) {
+      const token: Token = this.consume();
+      return ASTNodeFactory.createBinary(
+        <BinaryOperators>token.text,
+        left,
+        this.parsePower(),
+      );
+    }
+    return left;
+  }
+
+  parseUnary(): ASTNode {
+    if (
+      this.peek().type === TokenType.ADD ||
+      this.peek().type === TokenType.SUBTRACT
+    ) {
+      const token: Token = this.consume();
+
+      return ASTNodeFactory.createUnary(
+        <UnaryOperators>token.text,
+        this.parseUnary(),
+      );
+    }
+    return this.parsePrimary();
+  }
+
+  parsePrimary(): ASTNode {
+    if (this.peek().type === TokenType.OPENPAR) {
+      // Remove open par
+      this.consume();
+
+      // Evaluate inside of parenthesis
+      const expression: ASTNode = this.parseExpression();
+
+      if (this.peek().type === TokenType.CLOSEPAR) {
+        this.consume();
+      } else {
+        throw new Error('Missing closing parenthesis');
+      }
+
+      return expression;
     }
 
-    isAtEnd(): boolean {
-        return (this.peek().type === TokenType.EOF)
+    return this.parseNumber();
+  }
+
+  parseNumber(): ASTNode {
+    if (this.peek().type === TokenType.NUMBER) {
+      const token: Token = this.consume();
+      return ASTNodeFactory.createLiteral(token.text);
+    } else {
+      throw new Error(
+        `Unexpected token found: ${this.peek().type} ${this.currentIndex}`,
+      );
     }
-
-    start(): ASTNode {
-        const root: ASTNode = this.parseExpression();
-        console.dir(root.toJson(), { depth: null, colors: true })
-        if (!this.isAtEnd()) {
-            throw new Error(`Unexpected token at the end of expression: ${this.peek().char}`);
-        }
-
-        return root;
-    }
-
-    parseExpression(): ASTNode {
-        let left: ASTNode = this.parseTerm();
-        while (this.peek().type === TokenType.ADD || this.peek().type === TokenType.SUBTRACT) {
-            let token: Token = this.consume()
-            let right: ASTNode = this.parseTerm();
-            left = ASTNodeFactory.createBinary(<BinaryOperators>token.char, left, right)
-        }
-
-        return left;
-    }
-
-    parseTerm(): ASTNode {
-        let left: ASTNode = this.parsePower();
-        while (this.peek().type === TokenType.MULTIPLY || this.peek().type === TokenType.DIVIDE) {
-            let token: Token = this.consume()
-            let right: ASTNode = this.parsePower();
-            left = ASTNodeFactory.createBinary(<BinaryOperators>token.char, left, right)
-        }
-        return left;
-    }
-
-    parsePower(): ASTNode {
-        let left: ASTNode = this.parseUnary();
-        if (this.peek().type === TokenType.POWER) {
-            let token: Token = this.consume()
-            return ASTNodeFactory.createBinary(<BinaryOperators>token.char, left, this.parsePower())
-        }
-        return left;
-    }
-
-    parseUnary() : ASTNode {
-        if (this.peek().type === TokenType.ADD || this.peek().type === TokenType.SUBTRACT) {
-            let token: Token = this.consume()
-
-            return ASTNodeFactory.createUnary(<UnaryOperators>token.char, this.parseUnary())
-        }
-        return this.parsePrimary();
-    }
-
-    parsePrimary(): ASTNode {
-
-        if (this.peek().type === TokenType.OPENPAR) {
-            // Remove open par
-            let token: Token = this.consume()
-
-            // Evaluate inside of parenthesis
-            let expression: ASTNode = this.parseExpression();
-
-            if (this.peek().type === TokenType.CLOSEPAR) {
-                this.consume()
-            } else {
-                throw new Error('Missing closing parenthesis')
-            }
-
-            return expression;
-        }
-
-        return this.parseNumber();
-    }
-
-
-    parseNumber(): ASTNode {
-        if (this.peek().type === TokenType.NUMBER) {
-            const token: Token = this.consume();
-            return ASTNodeFactory.createLiteral(token.char)
-        } else {
-            throw new Error (`Unexpected token found: ${this.peek().type} ${this.currentIndex}`)
-        }
-    }
+  }
 }
-

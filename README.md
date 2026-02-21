@@ -5,6 +5,7 @@ Unary support (negative numbers)
 Type safety
 
 Supported Operators:
+
 - `+` Addition
 - `-` Subtraction
 - `*` Multiplication
@@ -19,5 +20,7 @@ Process
 3. Calculate solution using post-order traversal
 
 Run Instructions
-- Parser: e.g. npm install && npx tsx parser.ts
-- Tests: e.g. npx vitest 
+
+- Parser: `npm install && npx tsx parser.ts`
+- Tests: `npx vitest`
+- Formatter: `npm run format`
