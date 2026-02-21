@@ -1,4 +1,5 @@
-export type AllowedOperators = "+" | "-" | "*" | "/" | "^";
+export type BinaryOperators = "+" | "-" | "*" | "/" | "^";
+export type UnaryOperators = "+" | "-";
 
 export enum TokenType {
     ADD = "ADD",
@@ -14,7 +15,8 @@ export enum TokenType {
 
 export enum NodeKind {
     LITERAL = "LITERAL",
-    BINARYEXPRESSION = "BINARYEXPRESSION"
+    BINARYEXPRESSION = "BINARYEXPRESSION",
+    UNARYEXPRESSION = "UNARYEXPRESSION",
 }
 
 export interface Token {
@@ -65,7 +67,7 @@ export class BinaryNode extends ASTNode {
     readonly kind: NodeKind.BINARYEXPRESSION = NodeKind.BINARYEXPRESSION;
 
     // Use 'public' to automatically create the 'value' property
-    constructor(public value: AllowedOperators, public left: ASTNode, public right: ASTNode) {
+    constructor(public value: BinaryOperators, public left: ASTNode, public right: ASTNode) {
         super();
     }
 
@@ -115,14 +117,46 @@ export class BinaryNode extends ASTNode {
     }
 }
 
+export class UnaryNode extends ASTNode {
+    readonly kind: NodeKind.UNARYEXPRESSION= NodeKind.UNARYEXPRESSION;
+
+    // Use 'public' to automatically create the 'value' property
+    constructor(public value: UnaryOperators, public right: ASTNode) {
+        super();
+    }
+
+    // Converts "5" into the number 5
+    calculate(): number {
+        return UnaryNode.dispatch[this.value](this.right.calculate());
+    }
+
+// Recursively get children
+    toJson() {
+        return {
+            kind: this.kind,
+            value: this.value,
+            right: this.right.toJson(),
+        }
+    }
+
+    static dispatch = {
+        "+": (b: number): number => b,
+        "-": (b: number): number => -b,
+    };
+}
+
 
 export class ASTNodeFactory {
     static createLiteral(value: string): ASTNode {
         return new LiteralNode(value);
     }
 
-    static createBinary(value: AllowedOperators, left: ASTNode, right: ASTNode): ASTNode {
+    static createBinary(value: BinaryOperators, left: ASTNode, right: ASTNode): ASTNode {
         return new BinaryNode(value, left, right)
+    }
+
+    static createUnary(value: UnaryOperators, right: ASTNode): ASTNode {
+        return new UnaryNode(value, right)
     }
 }
 

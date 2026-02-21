@@ -90,11 +90,52 @@ describe('Parser Class', () => {
     it('Throw an error for unexpected symbol arrangement', () => {
         const scanner = new Scanner();
 
-        const raw: string = "2 ++ 4";
+        const raw: string = "2 +* 4";
         const tokens: Token[] = scanner.scanEquation(raw);
 
         const parser = new Parser(tokens);
 
-        expect(() => parser.start()).toThrowError('Unexpected token found: ADD')
+        expect(() => parser.start()).toThrowError('Unexpected token found: MULTIPLY')
+    })
+
+    it('Solve a large equation', () => {
+        const scanner = new Scanner();
+
+        const raw: string = "3 +5*(3*2-3)^3*3";
+        const tokens: Token[] = scanner.scanEquation(raw);
+        const parser = new Parser(tokens);
+
+        const tree: ASTNode = parser.start();
+
+        const result: number = tree.calculate();
+        expect(result).toBe(408);
+    })
+
+    it('Handle unary operators', ()=> {
+        const scanner = new Scanner();
+
+        const raw: string = "-2 + 1";
+        const tokens: Token[] = scanner.scanEquation(raw);
+
+        const parser = new Parser(tokens);
+
+        const tree: ASTNode = parser.start();
+
+        const result: number = tree.calculate();
+        expect(result).toBe(-1);
+    })
+
+    it('Handle unary precedence', ()=> {
+        const scanner = new Scanner();
+
+        const raw: string = "-2^2";
+        const tokens: Token[] = scanner.scanEquation(raw);
+
+        const parser = new Parser(tokens);
+
+        const tree: ASTNode = parser.start();
+
+        const result: number = tree.calculate();
+        expect(result).toBe(4);
     })
 })
